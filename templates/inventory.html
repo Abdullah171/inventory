@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Inventory</title>
+    <title>Inventory Management System</title>
 </head>
 <style>
     body {
@@ -77,111 +77,170 @@
     button#logoutButton:hover {
         background-color: #e64a19;
     }
+
+
+    #customerContainer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    #customerForm {
+        /* flex: 1; */
+        margin-right: 20px;
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    #customerInfo {
+        flex: 2;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
 </style>
 <body>
-    <h1>Inventory Management</h1>
+    <h1>Inventory Management System</h1>
+    <h1>Store The Data In Database</h1>
+    
+    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin: 20px;">
+        <!-- First Row -->
+        <div style="flex-basis: calc(33.33% - 20px);">
+            <h2>Create New Customer</h2>
+            <form id="createCustomerForm">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name" required><br>
+                
+                <label for="phone">Phone:</label><br>
+                <input type="text" id="phone" name="phone" required><br>
+                
+                <label for="address">Address:</label><br>
+                <input type="text" id="address" name="address" required><br>
+                
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email" required><br><br>
+                
+                <input type="submit" value="Create Customer">
+            </form>
+        </div>
 
-    <!-- Form for Creating New Customer -->
-    <h2>Create New Customer</h2>
-    <form id="createCustomerForm">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" required><br>
+        <div style="flex-basis: calc(33.33% - 20px);">
+            <h2>Create New Order</h2>
+            <form id="createOrderForm">
+                <label for="orderDate">Date:</label><br>
+                <input type="date" id="orderDate" name="orderDate" required><br>
+
+                <label for="orderCustomerID">Customer ID:</label><br>
+                <input type="number" id="orderCustomerID" name="orderCustomerID" required><br>
+
+                <label for="orderEmployeeID">Employee ID:</label><br>
+                <input type="number" id="orderEmployeeID" name="orderEmployeeID" required><br>
+
+                <label for="orderCost">Cost:</label><br>
+                <input type="number" step="0.01" id="orderCost" name="orderCost" required><br><br>
+
+                <input type="submit" value="Create Order">
+            </form>
+        </div>
+
+        <!-- Second Row -->
+        <div style="flex-basis: calc(33.33% - 20px);">
+            <h2>Create New Employee</h2>
+            <form id="createEmployeeForm">
+                <label for="employeeName">Name:</label><br>
+                <input type="text" id="employeeName" name="employeeName" required><br>
+
+                <label for="employeeRole">Role:</label><br>
+                <input type="text" id="employeeRole" name="employeeRole" required><br>
+
+                <label for="employeePhone">Phone:</label><br>
+                <input type="text" id="employeePhone" name="employeePhone" required><br><br>
+
+                <input type="submit" value="Create Employee">
+            </form>
+        </div>
+
+        <div style="flex-basis: calc(33.33% - 20px);">
+            <h2>Create New Product</h2>
+            <form id="createProductForm">
+                <label for="productName">Name:</label><br>
+                <input type="text" id="productName" name="productName" required><br>
+
+                <label for="productDescription">Description:</label><br>
+                <input type="text" id="productDescription" name="productDescription" required><br>
+
+                <label for="productPrice">Price:</label><br>
+                <input type="number" step="0.01" id="productPrice" name="productPrice" required><br>
+
+                <label for="productQuantityInStock">Quantity In Stock:</label><br>
+                <input type="number" id="productQuantityInStock" name="productQuantityInStock" required><br>
+
+                <label for="productCategoryID">Category ID:</label><br>
+                <input type="number" id="productCategoryID" name="productCategoryID" required><br><br>
+
+                <input type="submit" value="Create Product">
+            </form>
+        </div>
+
         
-        <label for="phone">Phone:</label><br>
-        <input type="text" id="phone" name="phone" required><br>
+
+        <div style="flex-basis: calc(33.33% - 20px);">
+            <h2>Create New Category</h2>
+            <form id="createCategoryForm">
+                <label for="categoryName">Name:</label><br>
+                <input type="text" id="categoryName" name="categoryName" required><br>
+
+                <label for="categoryDescription">Description:</label><br>
+                <input type="text" id="categoryDescription" name="categoryDescription" required><br><br>
+
+                <input type="submit" value="Create Category">
+            </form>
+        </div>
         
-        <label for="address">Address:</label><br>
-        <input type="text" id="address" name="address" required><br>
-        
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
-        
-        <input type="submit" value="Create Customer">
-    </form>
 
-    <h2>Create New Category</h2>
-    <form id="createCategoryForm">
-        <label for="categoryName">Name:</label><br>
-        <input type="text" id="categoryName" name="categoryName" required><br>
+        <div style="flex-basis: calc(33.33% - 20px);">
+            <h2>Create Order Details</h2>
+            <form id="createOrderDetailsForm">
+                <label for="orderDetailsOrderID">Order ID:</label><br>
+                <input type="number" id="orderDetailsOrderID" name="orderDetailsOrderID" required><br>
 
-        <label for="categoryDescription">Description:</label><br>
-        <input type="text" id="categoryDescription" name="categoryDescription" required><br><br>
+                <label for="orderDetailsProductID">Product ID:</label><br>
+                <input type="number" id="orderDetailsProductID" name="orderDetailsProductID" required><br>
 
-        <input type="submit" value="Create Category">
-    </form>
+                <label for="orderDetailsQuantity">Quantity:</label><br>
+                <input type="number" id="orderDetailsQuantity" name="orderDetailsQuantity" required><br>
 
+                <label for="orderDetailsPrice">Price:</label><br>
+                <input type="number" step="0.01" id="orderDetailsPrice" name="orderDetailsPrice" required><br><br>
 
-    <h2>Create New Product</h2>
-    <form id="createProductForm">
-        <label for="productName">Name:</label><br>
-        <input type="text" id="productName" name="productName" required><br>
+                <input type="submit" value="Create Order Details">
+            </form>
+        </div>
+    </div>
 
-        <label for="productDescription">Description:</label><br>
-        <input type="text" id="productDescription" name="productDescription" required><br>
+    <h1>Perform Analytics</h1>
 
-        <label for="productPrice">Price:</label><br>
-        <input type="number" step="0.01" id="productPrice" name="productPrice" required><br>
-
-        <label for="productQuantityInStock">Quantity In Stock:</label><br>
-        <input type="number" id="productQuantityInStock" name="productQuantityInStock" required><br>
-
-        <label for="productCategoryID">Category ID:</label><br>
-        <input type="number" id="productCategoryID" name="productCategoryID" required><br><br>
-
-        <input type="submit" value="Create Product">
-    </form>
-
-    <h2>Create New Employee</h2>
-    <form id="createEmployeeForm">
-        <label for="employeeName">Name:</label><br>
-        <input type="text" id="employeeName" name="employeeName" required><br>
-
-        <label for="employeeRole">Role:</label><br>
-        <input type="text" id="employeeRole" name="employeeRole" required><br>
-
-        <label for="employeePhone">Phone:</label><br>
-        <input type="text" id="employeePhone" name="employeePhone" required><br><br>
-
-        <input type="submit" value="Create Employee">
-    </form>
-
-    <h2>Create New Order</h2>
-<form id="createOrderForm">
-    <label for="orderDate">Date:</label><br>
-    <input type="date" id="orderDate" name="orderDate" required><br>
-
-    <label for="orderCustomerID">Customer ID:</label><br>
-    <input type="number" id="orderCustomerID" name="orderCustomerID" required><br>
-
-    <label for="orderEmployeeID">Employee ID:</label><br>
-    <input type="number" id="orderEmployeeID" name="orderEmployeeID" required><br>
-
-    <label for="orderCost">Cost:</label><br>
-    <input type="number" step="0.01" id="orderCost" name="orderCost" required><br><br>
-
-    <input type="submit" value="Create Order">
-</form>
-
-<h2>Create Order Details</h2>
-<form id="createOrderDetailsForm">
-    <label for="orderDetailsOrderID">Order ID:</label><br>
-    <input type="number" id="orderDetailsOrderID" name="orderDetailsOrderID" required><br>
-
-    <label for="orderDetailsProductID">Product ID:</label><br>
-    <input type="number" id="orderDetailsProductID" name="orderDetailsProductID" required><br>
-
-    <label for="orderDetailsQuantity">Quantity:</label><br>
-    <input type="number" id="orderDetailsQuantity" name="orderDetailsQuantity" required><br>
-
-    <label for="orderDetailsPrice">Price:</label><br>
-    <input type="number" step="0.01" id="orderDetailsPrice" name="orderDetailsPrice" required><br><br>
-
-    <input type="submit" value="Create Order Details">
-</form>
-
+    <div id="customerContainer">
+        <div id="customerForm">
+            <h2>Enter Customer ID to Get Information</h2>
+            <form id="getCustomerForm">
+                <label for="customerId">Customer ID:</label><br>
+                <input type="number" id="customerId" name="customerId" required><br><br>
+                <input type="submit" value="Get Customer Info">
+            </form>
+        </div>
+    
+        <div id="customerInfo">
+            <!-- Customer information will be displayed here -->
+        </div>
+    </div>
+    
+    
 
     <!-- Logout Button -->
-<button id="logoutButton">Logout</button>
+    <button id="logoutButton">Logout</button>
 
 
 <script>
@@ -387,6 +446,72 @@ document.getElementById('createOrderDetailsForm').addEventListener('submit', asy
             localStorage.removeItem('token');
             window.location.href = '/';
         });
+
+// Handle form submission for getting customer information
+document.getElementById('getCustomerForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const customerId = document.getElementById('customerId').value;
+        const token = localStorage.getItem('token'); // Replace with your token retrieval logic
+
+        try {
+            const response = await fetch(`/customer_info/${customerId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Display customer information in the customerInfo div
+                const customerInfoDiv = document.getElementById('customerInfo');
+                customerInfoDiv.innerHTML = `
+                    <h2>Customer Information</h2>
+                    <p><strong>Customer ID:</strong> ${data.CustomerID}</p>
+                    <p><strong>Name:</strong> ${data.Name}</p>
+                    <p><strong>Phone:</strong> ${data.Phone}</p>
+                    <p><strong>Address:</strong> ${data.Address}</p>
+                    <p><strong>Email:</strong> ${data.Email}</p>
+                    <h2>Orders</h2>
+                `;
+
+                // Display each order and its details
+                for (const order of data.Orders) {
+                    customerInfoDiv.innerHTML += `
+                        <div class="order">
+                            <p><strong>Order ID:</strong> ${order.OrderID}</p>
+                            <p><strong>Date:</strong> ${order.Date}</p>
+                            <p><strong>Employee:</strong> ${order.Employee.Name} (${order.Employee.Role}) - ${order.Employee.Phone}</p>
+                            <p><strong>Cost:</strong> ${order.Cost}</p>
+                            <h3>Order Details</h3>
+                        `;
+
+                    // Display each order detail
+                    for (const detail of order.OrderDetails) {
+                        customerInfoDiv.innerHTML += `
+                            <div class="order-detail">
+                                <p><strong>Product ID:</strong> ${detail.ProductID}</p>
+                                <p><strong>Name:</strong> ${detail.Name}</p>
+                                <p><strong>Description:</strong> ${detail.Description}</p>
+                                <p><strong>Quantity:</strong> ${detail.Quantity}</p>
+                                <p><strong>Price:</strong> ${detail.Price}</p>
+                            </div>
+                        `;
+                    }
+
+                    customerInfoDiv.innerHTML += `</div>`;
+                }
+            } else if (response.status === 404) {
+                alert('Customer not found.');
+            } else {
+                alert('Failed to retrieve customer information. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
 
     </script>
 

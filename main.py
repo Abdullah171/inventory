@@ -39,22 +39,94 @@ async def create_customer(customer: CustomerCreate, current_user: UserInDB = Dep
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Endpoint to retrieve customer details by CustomerID
-@app.get("/get_customer/{customer_id}")
-async def read_customer(customer_id: int, current_user: UserInDB = Depends(get_current_user)):
-    cursor.execute('SELECT * FROM Customer WHERE CustomerID = ?', (customer_id,))
-    customer = cursor.fetchone()
-    if customer:
-        customer_dict = {
-            "CustomerID": customer[0],
-            "Name": customer[1],
-            "Phone": customer[2],
-            "Address": customer[3],
-            "Email": customer[4],
+@app.get("/customer_info/{customer_id}")
+async def get_customer_info(customer_id: int, current_user: UserInDB = Depends(get_current_user)):
+    try:
+        # Retrieve customer information
+        cursor.execute('''
+            SELECT * FROM Customer WHERE CustomerID = ?
+        ''', (customer_id,))
+        customer_data = cursor.fetchone()
+        
+        if not customer_data:
+            raise HTTPException(status_code=404, detail="Customer not found")
+
+        customer_info = {
+            "CustomerID": customer_data[0],
+            "Name": customer_data[1],
+            "Phone": customer_data[2],
+            "Address": customer_data[3],
+            "Email": customer_data[4]
         }
-        return customer_dict
-    else:
-        raise HTTPException(status_code=404, detail="Customer not found")
+
+        # Retrieve customer's orders
+        cursor.execute('''
+            SELECT * FROM Orders WHERE CustomerID = ?
+        ''', (customer_id,))
+        orders_data = cursor.fetchall()
+        
+        orders = []
+        for order_data in orders_data:
+            order_id = order_data[0]
+            order_date = order_data[1]
+            employee_id = order_data[3]
+            cost = order_data[4]
+
+            # Retrieve employee information for each order
+            cursor.execute('''
+                SELECT Name, Role, Phone FROM Employee WHERE EmployeeID = ?
+            ''', (employee_id,))
+            employee_data = cursor.fetchone()
+            
+            employee_info = {
+                "Name": employee_data[0],
+                "Role": employee_data[1],
+                "Phone": employee_data[2]
+            }
+
+            # Retrieve order details for each order
+            cursor.execute('''
+                SELECT ProductID, Quantity, Price FROM OrderDetails WHERE OrderID = ?
+            ''', (order_id,))
+            order_details_data = cursor.fetchall()
+            
+            order_details = []
+            for detail_data in order_details_data:
+                product_id = detail_data[0]
+                quantity = detail_data[1]
+                price = detail_data[2]
+
+                # Retrieve product information for each order detail
+                cursor.execute('''
+                    SELECT Name, Description FROM Product WHERE ProductID = ?
+                ''', (product_id,))
+                product_data = cursor.fetchone()
+                
+                product_info = {
+                    "ProductID": product_id,
+                    "Name": product_data[0],
+                    "Description": product_data[1],
+                    "Quantity": quantity,
+                    "Price": price
+                }
+                order_details.append(product_info)
+
+            order_info = {
+                "OrderID": order_id,
+                "Date": order_date,
+                "Employee": employee_info,
+                "Cost": cost,
+                "OrderDetails": order_details
+            }
+            orders.append(order_info)
+
+        customer_info["Orders"] = orders
+
+        print (customer_info)
+        return customer_info
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/create_category/")
@@ -70,19 +142,6 @@ async def create_category(category: CategoryCreate, current_user: UserInDB = Dep
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/get_category/{category_id}")
-async def read_category(category_id: int, current_user: UserInDB = Depends(get_current_user)):
-    cursor.execute('SELECT * FROM Category WHERE CategoryID = ?', (category_id,))
-    category = cursor.fetchone()
-    if category:
-        category_dict = {
-            "CategoryID": category[0],
-            "Name": category[1],
-            "Description": category[2],
-        }
-        return category_dict
-    else:
-        raise HTTPException(status_code=404, detail="Category not found")
 
 @app.post("/create_product/")
 async def create_product(product: ProductCreate, current_user: UserInDB = Depends(get_current_user)):
@@ -96,23 +155,6 @@ async def create_product(product: ProductCreate, current_user: UserInDB = Depend
         return {"ProductID": product_id, **product.model_dump()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/get_product/{product_id}")
-async def read_product(product_id: int, current_user: UserInDB = Depends(get_current_user)):
-    cursor.execute('SELECT * FROM Product WHERE ProductID = ?', (product_id,))
-    product = cursor.fetchone()
-    if product:
-        product_dict = {
-            "ProductID": product[0],
-            "Name": product[1],
-            "Description": product[2],
-            "Price": product[3],
-            "QuantityInStock": product[4],
-            "CategoryID": product[5],
-        }
-        return product_dict
-    else:
-        raise HTTPException(status_code=404, detail="Product not found")
 
 
 @app.post("/create_employee/")
@@ -129,20 +171,6 @@ async def create_employee(employee: EmployeeCreate, current_user: UserInDB = Dep
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/get_employee/{employee_id}")
-async def read_employee(employee_id: int, current_user: UserInDB = Depends(get_current_user)):
-    cursor.execute('SELECT * FROM Employee WHERE EmployeeID = ?', (employee_id,))
-    employee = cursor.fetchone()
-    if employee:
-        employee_dict = {
-            "EmployeeID": employee[0],
-            "Name": employee[1],
-            "Role": employee[2],
-            "Phone": employee[3],
-        }
-        return employee_dict
-    else:
-        raise HTTPException(status_code=404, detail="Employee not found")
 
 @app.post("/create_order/")
 async def create_order(order: OrderCreate, current_user: UserInDB = Depends(get_current_user)):
@@ -157,22 +185,6 @@ async def create_order(order: OrderCreate, current_user: UserInDB = Depends(get_
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-
-@app.get("/get_order/{order_id}")
-async def read_order(order_id: int, current_user: UserInDB = Depends(get_current_user)):
-    cursor.execute('SELECT * FROM Orders WHERE OrderID = ?', (order_id,))
-    order = cursor.fetchone()
-    if order:
-        order_dict = {
-            "OrderID": order[0],
-            "Date": order[1],
-            "CustomerID": order[2],
-            "EmployeeID": order[3],
-            "Cost": order[4],
-        }
-        return order_dict
-    else:
-        raise HTTPException(status_code=404, detail="Order not found")
 
 
 @app.post("/create_order_details/")
