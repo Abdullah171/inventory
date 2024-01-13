@@ -3,6 +3,81 @@
 <head>
     <title>Inventory</title>
 </head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    h2 {
+        margin-top: 20px;
+        color: #444;
+    }
+
+    form {
+        max-width: 400px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    input[type="submit"] {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #555;
+    }
+
+    button#logoutButton {
+        display: block;
+        margin: 20px auto;
+        background-color: #ff5722;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button#logoutButton:hover {
+        background-color: #e64a19;
+    }
+</style>
 <body>
     <h1>Inventory Management</h1>
 
@@ -106,10 +181,10 @@
 
 
     <!-- Logout Button -->
-    <button id="logoutButton">Logout</button>
+<button id="logoutButton">Logout</button>
 
 
-    <script>
+<script>
         // Use the stored token for authentication in API requests
         const token = localStorage.getItem('token');
 
