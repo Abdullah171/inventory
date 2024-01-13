@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory</title>
+</head>
+<body>
+    <h1>Inventory Management</h1>
+
+    <!-- Form for Creating New Customer -->
+    <h2>Create New Customer</h2>
+    <form id="createCustomerForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        
+        <label for="phone">Phone:</label><br>
+        <input type="text" id="phone" name="phone" required><br>
+        
+        <label for="address">Address:</label><br>
+        <input type="text" id="address" name="address" required><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        
+        <input type="submit" value="Create Customer">
+    </form>
+
+
+    <!-- Logout Button -->
+    <button id="logoutButton">Logout</button>
+
+
+    <script>
+        // Use the stored token for authentication in API requests
+        const token = localStorage.getItem('token');
+
+        // Handle form submission for creating a new customer
+        document.getElementById('createCustomerForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch('/create_customers/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ Name: name, Phone: phone, Address: address, Email: email })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(`Customer created successfully with ID: ${data.CustomerID}`);
+                } else {
+                    alert('Failed to create customer. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        });
+    </script>
+
+    
+</body>
+</html>
