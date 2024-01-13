@@ -24,6 +24,86 @@
         <input type="submit" value="Create Customer">
     </form>
 
+    <h2>Create New Category</h2>
+    <form id="createCategoryForm">
+        <label for="categoryName">Name:</label><br>
+        <input type="text" id="categoryName" name="categoryName" required><br>
+
+        <label for="categoryDescription">Description:</label><br>
+        <input type="text" id="categoryDescription" name="categoryDescription" required><br><br>
+
+        <input type="submit" value="Create Category">
+    </form>
+
+
+    <h2>Create New Product</h2>
+    <form id="createProductForm">
+        <label for="productName">Name:</label><br>
+        <input type="text" id="productName" name="productName" required><br>
+
+        <label for="productDescription">Description:</label><br>
+        <input type="text" id="productDescription" name="productDescription" required><br>
+
+        <label for="productPrice">Price:</label><br>
+        <input type="number" step="0.01" id="productPrice" name="productPrice" required><br>
+
+        <label for="productQuantityInStock">Quantity In Stock:</label><br>
+        <input type="number" id="productQuantityInStock" name="productQuantityInStock" required><br>
+
+        <label for="productCategoryID">Category ID:</label><br>
+        <input type="number" id="productCategoryID" name="productCategoryID" required><br><br>
+
+        <input type="submit" value="Create Product">
+    </form>
+
+    <h2>Create New Employee</h2>
+    <form id="createEmployeeForm">
+        <label for="employeeName">Name:</label><br>
+        <input type="text" id="employeeName" name="employeeName" required><br>
+
+        <label for="employeeRole">Role:</label><br>
+        <input type="text" id="employeeRole" name="employeeRole" required><br>
+
+        <label for="employeePhone">Phone:</label><br>
+        <input type="text" id="employeePhone" name="employeePhone" required><br><br>
+
+        <input type="submit" value="Create Employee">
+    </form>
+
+    <h2>Create New Order</h2>
+<form id="createOrderForm">
+    <label for="orderDate">Date:</label><br>
+    <input type="date" id="orderDate" name="orderDate" required><br>
+
+    <label for="orderCustomerID">Customer ID:</label><br>
+    <input type="number" id="orderCustomerID" name="orderCustomerID" required><br>
+
+    <label for="orderEmployeeID">Employee ID:</label><br>
+    <input type="number" id="orderEmployeeID" name="orderEmployeeID" required><br>
+
+    <label for="orderCost">Cost:</label><br>
+    <input type="number" step="0.01" id="orderCost" name="orderCost" required><br><br>
+
+    <input type="submit" value="Create Order">
+</form>
+
+<h2>Create Order Details</h2>
+<form id="createOrderDetailsForm">
+    <label for="orderDetailsOrderID">Order ID:</label><br>
+    <input type="number" id="orderDetailsOrderID" name="orderDetailsOrderID" required><br>
+
+    <label for="orderDetailsProductID">Product ID:</label><br>
+    <input type="number" id="orderDetailsProductID" name="orderDetailsProductID" required><br>
+
+    <label for="orderDetailsQuantity">Quantity:</label><br>
+    <input type="number" id="orderDetailsQuantity" name="orderDetailsQuantity" required><br>
+
+    <label for="orderDetailsPrice">Price:</label><br>
+    <input type="number" step="0.01" id="orderDetailsPrice" name="orderDetailsPrice" required><br><br>
+
+    <input type="submit" value="Create Order Details">
+</form>
+
 
     <!-- Logout Button -->
     <button id="logoutButton">Logout</button>
@@ -64,11 +144,175 @@
         });
 
 
-        // Logout functionality
-        document.getElementById('logoutButton').addEventListener('click', function() {
+    document.getElementById('createCategoryForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const name = document.getElementById('categoryName').value;
+    const description = document.getElementById('categoryDescription').value;
+
+    try {
+        const response = await fetch('/create_category/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ Name: name, Description: description })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert(`Category created successfully with ID: ${data.CategoryID}`);
+        } else {
+            alert('Failed to create category. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+
+
+        document.getElementById('createProductForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const name = document.getElementById('productName').value;
+    const description = document.getElementById('productDescription').value;
+    const price = document.getElementById('productPrice').value;
+    const quantityInStock = document.getElementById('productQuantityInStock').value;
+    const categoryID = document.getElementById('productCategoryID').value;
+
+    try {
+        const response = await fetch('/create_product/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ 
+                Name: name, 
+                Description: description, 
+                Price: parseFloat(price), 
+                QuantityInStock: parseInt(quantityInStock), 
+                CategoryID: parseInt(categoryID) 
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert(`Product created successfully with ID: ${data.ProductID}`);
+        } else {
+            alert('Failed to create product. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+document.getElementById('createEmployeeForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const name = document.getElementById('employeeName').value;
+    const role = document.getElementById('employeeRole').value;
+    const phone = document.getElementById('employeePhone').value;
+
+    try {
+        const response = await fetch('/create_employee/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ 
+                Name: name, 
+                Role: role, 
+                Phone: phone 
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert(`Employee created successfully with ID: ${data.EmployeeID}`);
+        } else {
+            alert('Failed to create employee. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+
+document.getElementById('createOrderForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const date = document.getElementById('orderDate').value;
+    const customerID = parseInt(document.getElementById('orderCustomerID').value);
+    const employeeID = parseInt(document.getElementById('orderEmployeeID').value);
+    const cost = parseFloat(document.getElementById('orderCost').value);
+
+    try {
+        const response = await fetch('/create_order/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ 
+                Date: date, 
+                CustomerID: customerID, 
+                EmployeeID: employeeID, 
+                Cost: cost 
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert(`Order created successfully with ID: ${data.OrderID}`);
+        } else {
+            alert('Failed to create order. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+
+document.getElementById('createOrderDetailsForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const orderID = parseInt(document.getElementById('orderDetailsOrderID').value);
+    const productID = parseInt(document.getElementById('orderDetailsProductID').value);
+    const quantity = parseInt(document.getElementById('orderDetailsQuantity').value);
+    const price = parseFloat(document.getElementById('orderDetailsPrice').value);
+
+    try {
+        const response = await fetch('/create_order_details/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Corrected syntax for template literals
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                OrderID: orderID,
+                ProductID: productID,
+                Quantity: quantity,
+                Price: price
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert(`Order Details created successfully with ID: ${data.OrderDetailsID}`);
+        } else {
+            alert('Failed to create order details. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+ // Logout functionality
+ document.getElementById('logoutButton').addEventListener('click', function() {
             localStorage.removeItem('token');
             window.location.href = '/';
         });
+
     </script>
 
     
