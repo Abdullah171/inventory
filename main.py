@@ -39,6 +39,82 @@ async def create_customer(customer: CustomerCreate, current_user: UserInDB = Dep
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+
+@app.post("/create_category/")
+async def create_category(category: CategoryCreate, current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            INSERT INTO Category (Name, Description)
+            VALUES (?, ?)
+        ''', (category.Name, category.Description))
+        conn.commit()
+        category_id = cursor.lastrowid
+        return {"CategoryID": category_id, **category.model_dump()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/create_product/")
+async def create_product(product: ProductCreate, current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            INSERT INTO Product (Name, Description, Price, QuantityInStock, CategoryID)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (product.Name, product.Description, product.Price, product.QuantityInStock, product.CategoryID))
+        conn.commit()
+        product_id = cursor.lastrowid
+        return {"ProductID": product_id, **product.model_dump()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/create_employee/")
+async def create_employee(employee: EmployeeCreate, current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            INSERT INTO Employee (Name, Role, Phone)
+            VALUES (?, ?, ?)
+        ''', (employee.Name, employee.Role, employee.Phone))
+        conn.commit()
+        employee_id = cursor.lastrowid
+        return {"EmployeeID": employee_id, **employee.model_dump()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/create_order/")
+async def create_order(order: OrderCreate, current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            INSERT INTO Orders (Date, CustomerID, EmployeeID, Cost)
+            VALUES (?, ?, ?, ?)
+        ''', (order.Date, order.CustomerID, order.EmployeeID, order.Cost))
+        conn.commit()
+        order_id = cursor.lastrowid
+        return {"OrderID": order_id, **order.model_dump()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+@app.post("/create_order_details/")
+async def create_order_details(order_details: OrderDetailsCreate, current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price)
+            VALUES (?, ?, ?, ?)
+        ''', (order_details.OrderID, order_details.ProductID, order_details.Quantity, order_details.Price))
+        conn.commit()
+        order_details_id = cursor.lastrowid
+        return {"OrderDetailsID": order_details_id, **order_details.model_dump()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
 @app.get("/customer_info/{customer_id}")
 async def get_customer_info(customer_id: int, current_user: UserInDB = Depends(get_current_user)):
     try:
@@ -129,76 +205,101 @@ async def get_customer_info(customer_id: int, current_user: UserInDB = Depends(g
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/create_category/")
-async def create_category(category: CategoryCreate, current_user: UserInDB = Depends(get_current_user)):
+@app.get("/customers/total_spent")
+async def get_customers_total_spent(current_user: UserInDB = Depends(get_current_user)):
     try:
         cursor.execute('''
-            INSERT INTO Category (Name, Description)
-            VALUES (?, ?)
-        ''', (category.Name, category.Description))
-        conn.commit()
-        category_id = cursor.lastrowid
-        return {"CategoryID": category_id, **category.model_dump()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/create_product/")
-async def create_product(product: ProductCreate, current_user: UserInDB = Depends(get_current_user)):
-    try:
-        cursor.execute('''
-            INSERT INTO Product (Name, Description, Price, QuantityInStock, CategoryID)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (product.Name, product.Description, product.Price, product.QuantityInStock, product.CategoryID))
-        conn.commit()
-        product_id = cursor.lastrowid
-        return {"ProductID": product_id, **product.model_dump()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/create_employee/")
-async def create_employee(employee: EmployeeCreate, current_user: UserInDB = Depends(get_current_user)):
-    try:
-        cursor.execute('''
-            INSERT INTO Employee (Name, Role, Phone)
-            VALUES (?, ?, ?)
-        ''', (employee.Name, employee.Role, employee.Phone))
-        conn.commit()
-        employee_id = cursor.lastrowid
-        return {"EmployeeID": employee_id, **employee.model_dump()}
+            SELECT Customer.CustomerID, Customer.Name, SUM(Orders.Cost) as TotalSpent
+            FROM Customer
+            JOIN Orders ON Customer.CustomerID = Orders.CustomerID
+            GROUP BY Customer.CustomerID
+        ''')
+        result = cursor.fetchall()
+        return {"customers": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 
-@app.post("/create_order/")
-async def create_order(order: OrderCreate, current_user: UserInDB = Depends(get_current_user)):
+@app.get("/products/top_sales")
+async def get_top_sales_products(current_user: UserInDB = Depends(get_current_user)):
     try:
         cursor.execute('''
-            INSERT INTO Orders (Date, CustomerID, EmployeeID, Cost)
-            VALUES (?, ?, ?, ?)
-        ''', (order.Date, order.CustomerID, order.EmployeeID, order.Cost))
-        conn.commit()
-        order_id = cursor.lastrowid
-        return {"OrderID": order_id, **order.model_dump()}
+            SELECT Product.ProductID, Product.Name, SUM(OrderDetails.Quantity) as TotalSold
+            FROM Product
+            JOIN OrderDetails ON Product.ProductID = OrderDetails.ProductID
+            GROUP BY Product.ProductID
+            ORDER BY TotalSold DESC
+            LIMIT 5
+        ''')
+        result = cursor.fetchall()
+        return {"top_products": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.get("/orders/details")
+async def get_orders_details(current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            SELECT Orders.OrderID, Customer.Name as CustomerName, Employee.Name as EmployeeName, Orders.Cost
+            FROM Orders
+            JOIN Customer ON Orders.CustomerID = Customer.CustomerID
+            JOIN Employee ON Orders.EmployeeID = Employee.EmployeeID
+        ''')
+        result = cursor.fetchall()
+        return {"orders": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.get("/categories/highest_average_price")
+async def get_categories_highest_average_price(current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            SELECT Category.CategoryID, Category.Name, AVG(Product.Price) as AveragePrice
+            FROM Category
+            JOIN Product ON Category.CategoryID = Product.CategoryID
+            GROUP BY Category.CategoryID
+            ORDER BY AveragePrice DESC
+        ''')
+        result = cursor.fetchall()
+        return {"categories": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Endpoint to find out which products are out of stock
+@app.get("/products/out_of_stock")
+async def get_products_out_of_stock(current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            SELECT ProductID, Name
+            FROM Product
+            WHERE QuantityInStock = 0
+        ''')
+        result = cursor.fetchall()
+        return {"out_of_stock_products": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Endpoint to get a list of products along with their respective categories
+@app.get("/products_with_categories")
+async def get_products_with_categories(current_user: UserInDB = Depends(get_current_user)):
+    try:
+        cursor.execute('''
+            SELECT Product.ProductID, Product.Name AS ProductName, Category.Name AS CategoryName
+            FROM Product
+            JOIN Category ON Product.CategoryID = Category.CategoryID
+        ''')
+        result = cursor.fetchall()
+        return {"products_with_categories": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
 
-
-@app.post("/create_order_details/")
-async def create_order_details(order_details: OrderDetailsCreate, current_user: UserInDB = Depends(get_current_user)):
-    try:
-        cursor.execute('''
-            INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price)
-            VALUES (?, ?, ?, ?)
-        ''', (order_details.OrderID, order_details.ProductID, order_details.Quantity, order_details.Price))
-        conn.commit()
-        order_details_id = cursor.lastrowid
-        return {"OrderDetailsID": order_details_id, **order_details.model_dump()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 
