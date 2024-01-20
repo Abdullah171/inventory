@@ -233,57 +233,12 @@ async def get_top_sales_products(current_user: UserInDB = Depends(get_current_us
             LIMIT 5
         ''')
         result = cursor.fetchall()
+        print(result)
         return {"top_products": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
-@app.get("/orders/details")
-async def get_orders_details(current_user: UserInDB = Depends(get_current_user)):
-    try:
-        cursor.execute('''
-            SELECT Orders.OrderID, Customer.Name as CustomerName, Employee.Name as EmployeeName, Orders.Cost
-            FROM Orders
-            JOIN Customer ON Orders.CustomerID = Customer.CustomerID
-            JOIN Employee ON Orders.EmployeeID = Employee.EmployeeID
-        ''')
-        result = cursor.fetchall()
-        return {"orders": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-
-@app.get("/categories/highest_average_price")
-async def get_categories_highest_average_price(current_user: UserInDB = Depends(get_current_user)):
-    try:
-        cursor.execute('''
-            SELECT Category.CategoryID, Category.Name, AVG(Product.Price) as AveragePrice
-            FROM Category
-            JOIN Product ON Category.CategoryID = Product.CategoryID
-            GROUP BY Category.CategoryID
-            ORDER BY AveragePrice DESC
-        ''')
-        result = cursor.fetchall()
-        return {"categories": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# Endpoint to find out which products are out of stock
-@app.get("/products/out_of_stock")
-async def get_products_out_of_stock(current_user: UserInDB = Depends(get_current_user)):
-    try:
-        cursor.execute('''
-            SELECT ProductID, Name
-            FROM Product
-            WHERE QuantityInStock = 0
-        ''')
-        result = cursor.fetchall()
-        return {"out_of_stock_products": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 # Endpoint to get a list of products along with their respective categories
 @app.get("/products_with_categories")

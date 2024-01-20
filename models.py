@@ -6,6 +6,17 @@ from datetime import date
 def create_tables():
         
     try:
+
+        # # Connect to the MySQL database
+        # conn = mysql.connector.connect(
+        #     host='your_host',       # Usually 'localhost' or an IP address
+        #     database='your_database_name',
+        #     user='your_username',
+        #     password='your_password'
+        # )
+        # if conn.is_connected():
+        #     cursor = conn.cursor()
+
         # Connect to the SQLite database
         conn = sqlite3.connect('inventory.db')
         cursor = conn.cursor()
@@ -95,6 +106,10 @@ def create_tables():
         return "Tables Created Successfully"
     except Exception as e:
         return f"Tables Creation Failed {e}"
+    # finally:
+    #     if conn.is_connected():
+    #         cursor.close()
+    #         conn.close()
 
 
 class UserCreate(BaseModel):

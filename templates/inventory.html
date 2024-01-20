@@ -100,6 +100,78 @@
         border: 1px solid #ccc;
         border-radius: 5px;
     }
+
+    .customer {
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+
+        #fetchDataButton {
+    background-color: #113012; /* Green background */
+    border: none; /* No borders */
+    color: white; /* White text */
+    padding: 15px 32px; /* Padding inside the button */
+    text-align: center; /* Center-align text */
+    text-decoration: none; /* No underline on text */
+    display: inline-block; /* Set the display to inline-block */
+    font-size: 16px; /* Text font size */
+    margin: 4px 2px; /* Margin around the button */
+    cursor: pointer; /* Cursor changes to pointer when hovering over the button */
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+}
+
+#fetchDataButton:hover {
+    background-color: #45a049; /* Darker shade of green when hovered */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Shadow effect when hovered */
+}
+
+#fethsales{
+    background-color: #113012; /* Green background */
+    border: none; /* No borders */
+    color: white; /* White text */
+    padding: 15px 32px; /* Padding inside the button */
+    text-align: center; /* Center-align text */
+    text-decoration: none; /* No underline on text */
+    display: inline-block; /* Set the display to inline-block */
+    font-size: 16px; /* Text font size */
+    margin: 4px 2px; /* Margin around the button */
+    cursor: pointer; /* Cursor changes to pointer when hovering over the button */
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+}
+
+#fethsales:hover {
+    background-color: #45a049; /* Darker shade of green when hovered */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Shadow effect when hovered */
+}
+
+
+
+
+#fethproducts{
+    background-color: #113012; /* Green background */
+    border: none; /* No borders */
+    color: white; /* White text */
+    padding: 15px 32px; /* Padding inside the button */
+    text-align: center; /* Center-align text */
+    text-decoration: none; /* No underline on text */
+    display: inline-block; /* Set the display to inline-block */
+    font-size: 16px; /* Text font size */
+    margin: 4px 2px; /* Margin around the button */
+    cursor: pointer; /* Cursor changes to pointer when hovering over the button */
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+}
+
+#fethproducts:hover {
+    background-color: #45a049; /* Darker shade of green when hovered */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Shadow effect when hovered */
+}
+
+
 </style>
 <body>
     <h1>Inventory Management System</h1>
@@ -235,9 +307,22 @@
         <div id="customerInfo">
             <!-- Customer information will be displayed here -->
         </div>
+        
+        
     </div>
     
-    
+    <h1>Customer Total Spent</h1>
+    <button id="fetchDataButton">Fetch Customers' Total Spent</button>
+    <div id="customersTotalSpent"></div>
+
+
+    <h1>Top Sales Products</h1>
+    <div id="topSalesProducts"></div>
+    <button id="fethsales">Fetch Top Sales Products</button>
+
+    <h1>Products with Categories</h1>
+    <div id="productsWithCategories"></div>
+    <button id="fethproducts">Fetch Products with Categories</button>
 
     <!-- Logout Button -->
     <button id="logoutButton">Logout</button>
@@ -306,7 +391,7 @@
 
 
 
-        document.getElementById('createProductForm').addEventListener('submit', async function(event) {
+    document.getElementById('createProductForm').addEventListener('submit', async function(event) {
     event.preventDefault();
     const name = document.getElementById('productName').value;
     const description = document.getElementById('productDescription').value;
@@ -512,6 +597,151 @@ document.getElementById('getCustomerForm').addEventListener('submit', async func
             console.error('Error:', error);
         }
     });
+
+
+// Function to fetch total spent by customers
+async function fetchCustomersTotalSpent() {
+            const token = localStorage.getItem('token'); // Replace with your token retrieval logic
+            try {
+                const response = await fetch('/customers/total_spent', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayCustomersTotalSpent(data.customers);
+                } else {
+                    alert('Failed to retrieve customer total spent information. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to display customers' total spent
+        function displayCustomersTotalSpent(customers) {
+            const customersTotalSpentDiv = document.getElementById('customersTotalSpent');
+            customersTotalSpentDiv.innerHTML = '';
+
+            for (const customer of customers) {
+                const [customerID, name, totalSpent] = customer; // Destructuring the customer array
+
+                customersTotalSpentDiv.innerHTML += `
+                    <div class="customer">
+                        <h2>${name}</h2>
+                        <p><strong>Customer ID:</strong> ${customerID}</p>
+                        <p><strong>Total Spent:</strong> $${totalSpent.toFixed(2)}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Event listener for the button
+        document.getElementById('fetchDataButton').addEventListener('click', function() {
+            fetchCustomersTotalSpent();
+        });
+
+        
+// Function to fetch top sales products
+async function fetchTopSalesProducts() {
+            const token = localStorage.getItem('token'); // Replace with your token retrieval logic
+            try {
+                const response = await fetch('/products/top_sales', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayTopSalesProducts(data.top_products);
+                } else {
+                    alert('Failed to retrieve top sales products. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+      // Function to display top sales products
+function displayTopSalesProducts(products) {
+    const topSalesProductsDiv = document.getElementById('topSalesProducts');
+    topSalesProductsDiv.innerHTML = '';
+
+    for (const product of products) {
+        // Check if the product has all the required fields
+        if (product.length === 3) {
+            const [ProductID, Name, TotalSold] = product;
+
+            topSalesProductsDiv.innerHTML += `
+                <div class="product">
+                    <h2>${Name}</h2>
+                    <p><strong>Product ID:</strong> ${ProductID}</p>
+                    <p><strong>Total Sold:</strong> ${TotalSold}</p>
+                </div>
+            `;
+        } else {
+            console.error('Invalid product data:', product);
+        }
+    }
+}
+
+
+
+        // Event listener for the button
+        document.getElementById('fethsales').addEventListener('click', function() {
+            fetchTopSalesProducts();
+        });
+
+         // Function to fetch products with categories
+         async function fetchProductsWithCategories() {
+            const token = localStorage.getItem('token'); // Replace with your token retrieval logic
+            try {
+                const response = await fetch('/products_with_categories', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayProductsWithCategories(data.products_with_categories);
+                } else {
+                    alert('Failed to retrieve products with categories. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to display products with their categories
+        function displayProductsWithCategories(products) {
+            const productsWithCategoriesDiv = document.getElementById('productsWithCategories');
+            productsWithCategoriesDiv.innerHTML = '';
+
+            for (const product of products) {
+                // Assuming each product is a tuple with ProductID, ProductName, and CategoryName
+                const [ProductID, ProductName, CategoryName] = product;
+
+                productsWithCategoriesDiv.innerHTML += `
+                    <div class="product">
+                        <h2>${ProductName}</h2>
+                        <p><strong>Product ID:</strong> ${ProductID}</p>
+                        <p><strong>Category:</strong> ${CategoryName}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Event listener for the button
+        document.getElementById('fethproducts').addEventListener('click', function() {
+            fetchProductsWithCategories();
+        });
 
     </script>
 
